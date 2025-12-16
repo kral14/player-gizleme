@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Controls Hider - Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .video-container {
+            position: relative;
+            background: #000;
+            margin: 20px 0;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        .controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .play-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .progress {
+            flex: 1;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+        .info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .log {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Video Controls Hider - Test Səhifəsi</h1>
+        
+        <div class="info">
+            <h3>📋 Test Təlimatları:</h3>
+            <ol>
+                <li>Video yüklənəcək</li>
+                <li>Skript avtomatik işə düşəcək</li>
+                <li>Video üzərinə <strong>SAĞ KLIK</strong> edin</li>
+                <li>Aşağıdakı kontrol paneli gizlənməlidir</li>
+                <li>Yenidən sağ klik - geri gəlməlidir</li>
+            </ol>
+        </div>
+
+        <div class="video-container">
+            <video id="testVideo" controls>
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                Brauzeriniz video dəstəkləmir.
+            </video>
+            <div class="controls" id="customControls">
+                <button class="play-btn">▶ Play</button>
+                <div class="progress"></div>
+                <span>00:00 / 00:00</span>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>📊 Console Log:</h3>
+            <div class="log" id="logContainer"></div>
+        </div>
+
+        <div class="info">
+            <h3>ℹ️ Status:</h3>
+            <p id="status">Yüklənir...</p>
+        </div>
+    </div>
+
+    <script src="hide-controls-simple.js"></script>
+    <script>
+        // Console-u səhifəyə göstər
+        const logContainer = document.getElementById('logContainer');
+        const statusEl = document.getElementById('status');
+        
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const text = args.join(' ');
+            
+            if (text.includes('✅')) {
+                entry.className += ' log-success';
+            } else if (text.includes('⚠️') || text.includes('❌')) {
+                entry.className += ' log-error';
+            } else {
+                entry.className += ' log-info';
+            }
+            
+            entry.textContent = new Date().toLocaleTimeString() + ' - ' + text;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        };
+
+        // Status yenilə
+        setTimeout(() => {
+            const video = document.querySelector('video');
+            if (video && video.__controlsHiderAttached) {
+                statusEl.innerHTML = '✅ <strong>Skript işləyir!</strong> Video üzərinə sağ klik edin.';
+                statusEl.style.color = '#4CAF50';
+            } else {
+                statusEl.innerHTML = '❌ <strong>Xəta:</strong> Skript video tapа bilmədi.';
+                statusEl.style.color = '#f44336';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
