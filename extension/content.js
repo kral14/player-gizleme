@@ -1,18 +1,5 @@
-// ==UserScript==
-// @name         Video Player Controls Hider (AnimeCix)
-// @namespace    http://tampermonkey.net/
-// @version      3.0
-// @description  AnimeCix video kontrollarını gizlət - iframe dəstəyi
-// @author       You
-// @match        https://animecix.tv/*
-// @match        https://animecix.co/*
-// @match        https://*.animecix.tv/*
-// @match        https://*.animecix.co/*
-// @match        https://tau-video.xyz/*
-// @match        https://*.tau-video.xyz/*
-// @grant        none
-// @run-at       document-end
-// ==/UserScript==
+// AnimeCix Video Controls Hider - Browser Extension
+// Sağ klik və ya H düyməsi ilə player kontrollarını gizlət/göstər
 
 (function () {
     'use strict';
@@ -21,6 +8,14 @@
         return;
     }
     window.__videoControlsHiderActive = true;
+
+    // Debug - extension yükləndi
+    const debugMode = false; // Alert söndürüldü
+    if (debugMode) {
+        setTimeout(() => {
+            alert('🎬 Extension yükləndi! H düyməsinə basın.');
+        }, 1000);
+    }
 
     let controlsHidden = false;
     let lastFoundControls = null;
@@ -32,39 +27,91 @@
         }
 
         const video = document.querySelector('video');
-        if (!video) return null;
+        if (!video) {
+            console.log('⚠️ Video elementi tapılmadı');
+            return null;
+        }
 
+        console.log('🎥 Video tapıldı:', video);
+
+        // Genişləndirilmiş selektor siyahısı
         const selectors = [
+            // Plyr
             '.plyr__controls',
+            '.plyr-controls',
+            '[class*="plyr"][class*="control"]',
+
+            // Video.js
             '.vjs-control-bar',
+            '.video-js .vjs-control-bar',
+
+            // JW Player
             '.jw-controlbar',
+            '.jw-controls',
+
+            // YouTube
             '.ytp-chrome-bottom',
-            '[class*="plyr"]',
+            '.ytp-chrome-controls',
+
+            // Flowplayer
+            '.fp-controls',
+            '.flowplayer .fp-controls',
+
+            // Generic
+            '[class*="player"][class*="control"]',
+            '[class*="video"][class*="control"]',
             '[class*="controls"]',
-            '[class*="control-bar"]'
+            '[class*="control-bar"]',
+            '[class*="controlbar"]',
+
+            // HDFilmCehennemi və oxşar saytlar
+            '[class*="jw"]',
+            '[id*="control"]',
+            '[id*="player-control"]'
         ];
 
         for (let selector of selectors) {
             const element = document.querySelector(selector);
             if (element && element.offsetHeight > 0) {
                 lastFoundControls = element;
-                console.log('✅ Kontroller tapıldı:', selector);
+                console.log('✅ Kontroller tapıldı:', selector, element);
                 return element;
             }
         }
 
+        // Video parent-də axtarış
         if (video.parentElement) {
+            console.log('🔍 Video parent-də axtarış...');
             const siblings = Array.from(video.parentElement.querySelectorAll('div'));
             for (let sibling of siblings) {
                 const height = sibling.offsetHeight;
-                if (height > 30 && height < 200 && sibling !== video) {
+                const width = sibling.offsetWidth;
+                // Kontrol bar adətən geniş və qısa olur
+                if (height > 30 && height < 200 && width > 200 && sibling !== video) {
                     lastFoundControls = sibling;
-                    console.log('✅ Kontroller tapıldı (parent div)');
+                    console.log('✅ Kontroller tapıldı (parent div):', sibling);
                     return sibling;
                 }
             }
         }
 
+        // Video container-də axtarış
+        const container = video.closest('[class*="player"], [class*="video"], [id*="player"]');
+        if (container) {
+            console.log('🔍 Container-də axtarış...', container);
+            const controlDivs = container.querySelectorAll('div');
+            for (let div of controlDivs) {
+                const height = div.offsetHeight;
+                const width = div.offsetWidth;
+                if (height > 30 && height < 200 && width > 200 && div !== video) {
+                    lastFoundControls = div;
+                    console.log('✅ Kontroller tapıldı (container div):', div);
+                    return div;
+                }
+            }
+        }
+
+        console.log('❌ Heç bir kontrol tapılmadı');
         return null;
     }
 
@@ -72,7 +119,7 @@
         const controls = findPlayerControls();
 
         if (!controls) {
-            console.log('⚠️ Kontroller tapılmadı');
+            console.log('⚠️ Kontroller tapılmadı - video yüklənməyi gözləyin');
             updateButton('❌');
             return;
         }
@@ -185,7 +232,7 @@
     });
 
     function init() {
-        console.log('🎬 Video Controls Hider (iframe dəstəyi)');
+        console.log('🎬 AnimeCix Video Controls Hider Extension');
 
         if (!checkForVideo()) {
             if (document.body) {

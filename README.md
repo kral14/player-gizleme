@@ -1,67 +1,82 @@
-# Video Player Controls Hider
+# AnimeCix Video Controls Hider
 
-Film izləyərkən altyazıların üzərindəki player kontrollarını gizlətmək üçün skript.
+Browser extension - AnimeCix video player kontrollarını gizlətmək üçün.
 
-## 🎯 İstifadə
+## 🚀 Quraşdırma
 
-### AnimeCix.tv üçün
+### Chrome/Edge üçün:
 
-1. Film səhifəsini açın: https://animecix.tv
-2. **F12** basıb Console açın
-3. [hide-controls-simple.js](file:///C:/Users/nesib/.gemini/antigravity/scratch/video-player-controls-hider/hide-controls-simple.js) faylını açın
-4. Bütün kodu kopyalayıb console-a yapışdırın
-5. **Enter** basın
+1. **Chrome/Edge açın** və yazın:
+   - Chrome: `chrome://extensions/`
+   - Edge: `edge://extensions/`
 
-### Nəticə
+2. **Developer mode** aktivləşdirin (yuxarı sağ küncdə)
 
-Console-da görəcəksiniz:
-```
-🎬 Video Controls Hider yükləndi (AnimeCix)
-✅ 1 video tapıldı və hazırlandı
-✅ Hazırdır! Video üzərinə sağ klik edin.
-```
+3. **"Load unpacked"** düyməsinə basın
+
+4. **extension** qovluğunu seçin:
+   ```
+   C:\Users\nesib\.gemini\antigravity\scratch\video-player-controls-hider\extension
+   ```
+
+5. ✅ Extension quraşdırıldı!
+
+## 💡 İstifadə
+
+Extension quraşdırıldıqdan sonra AnimeCix-ə daxil olun:
+
+- **H** düyməsinə basın → Kontroller toggle olur
+- **Ctrl+H** basın → Eyni effekt  
+- **🙈 düyməyə** klik edin (sağ alt künc)
+- **Video üzərində sağ klik** → Toggle
+
+## ✨ Xüsusiyyətlər
+
+✅ **Avtomatik işləyir** - Tampermonkey lazım deyil  
+✅ **iframe dəstəyi** - tau-video.xyz və digər iframe-lər  
+✅ **Floating button UI** - Sağ alt küncdə 🙈 düyməsi  
+✅ **Klaviatura qısayolları** - H və Ctrl+H  
+✅ **Sağ klik dəstəyi** - Video üzərində  
+✅ **Dinamik aşkarlama** - MutationObserver ilə  
+✅ **Plyr, Video.js** və digər playerləri dəstəkləyir
 
 ## 🎮 Necə İşlədir
 
-- **İlk SAĞ KLIK** → Kontroller gizlənir
-- **İkinci SAĞ KLIK** → Kontroller göstərilir
-- **Ctrl+H** → Eyni funksiya
+1. Extension avtomatik olaraq AnimeCix.tv və tau-video.xyz saytlarında aktivləşir
+2. Video tapıldıqda sağ alt küncdə 🙈 düyməsi görünür
+3. **H** basın və ya **düyməyə klik** edin
+4. Kontroller gizlənir/göstərilir
 
-## 🔧 Xüsusiyyətlər
+## 📁 Struktur
 
-✅ Dinamik video yüklənməsi dəstəyi (50 saniyə gözləyir)  
-✅ MutationObserver ilə avtomatik aşkarlama  
-✅ Kontrol cache sistemi (performans)  
-✅ Event capturing (daha güclü)  
-✅ Plyr, Video.js və digər playerləri dəstəkləyir
+```
+video-player-controls-hider/
+├── extension/              # Browser extension
+│   ├── manifest.json      # Extension konfiqurasiyası
+│   ├── content.js         # Əsas skript
+│   ├── icon*.png          # İkonlar
+│   └── README.md          # Ətraflı təlimatlar
+└── README.md              # Bu fayl
+```
 
 ## ❓ Problem Həlli
 
-### Video tapılmır
-- Səhifəni yeniləyin və yenidən cəhd edin
-- Video tam yüklənənə qədər gözləyin (50 saniyə)
-
-### Sağ klik işləmir
-- Console-da xəta varmı yoxlayın
-- Skripti yenidən yapışdırın
+### Extension işləmir
+- Developer mode aktivdir?
+- Extension enable edilib?
+- Səhifəni yeniləyin (F5)
 
 ### Kontroller tapılmır
-Console-da yazın:
-```javascript
-document.querySelector('video')
-```
-Video varsa, sonra:
-```javascript
-document.querySelector('.plyr__controls')
-```
+- Video tam yüklənənə qədər gözləyin
+- Console açıb (F12) xəta varmı yoxlayın
+- Extension-u reload edin
 
-## 📝 Qeydlər
-
-- Skript yalnız cari səhifədə işləyir
-- Səhifəni yeniləyəndə yenidən yapışdırmalısınız
-- Daimi həll üçün Tampermonkey istifadə edin
+### Düymə görünmür
+- Səhifədə video varmı yoxlayın
+- Console-da `document.querySelector('video')` yazın
 
 ---
 
+**Versiya:** 1.0.0  
 **Son yeniləmə:** 2025-12-16  
-**Versiya:** 2.0 (AnimeCix optimized)
+**GitHub:** https://github.com/kral14/player-gizleme

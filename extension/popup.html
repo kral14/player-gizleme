@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Controls Hider</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Video Controls Hider</h1>
+            <p class="subtitle">Sayt əlavə edin və kontrolları gizlədin</p>
+        </header>
+
+        <div class="add-section">
+            <input type="text" id="urlInput" placeholder="https://example.com" spellcheck="false">
+            <button id="addBtn" class="btn-primary">
+                <span class="btn-icon">➕</span>
+                Əlavə et
+            </button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="urls-section">
+            <h2>Aktiv Saytlar</h2>
+            <div id="urlsList" class="urls-list">
+                <!-- URLs will be added here dynamically -->
+            </div>
+        </div>
+
+        <footer>
+            <div class="shortcuts">
+                <span class="shortcut-item">⌨️ <kbd>H</kbd> Toggle</span>
+                <span class="shortcut-item">⌨️ <kbd>Ctrl+H</kbd> Toggle</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
