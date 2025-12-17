@@ -1,12 +1,8 @@
 // Popup UI Logic - URL Management
 
 const DEFAULT_URLS = [
-    'https://animecix.tv/*',
-    'https://animecix.co/*',
-    'https://*.animecix.tv/*',
-    'https://*.animecix.co/*',
-    'https://tau-video.xyz/*',
-    'https://*.tau-video.xyz/*'
+    // Extension işləyir bütün saytlarda (<all_urls> manifest-də)
+    // İstifadəçi popup-dan əlavə URL-lər əlavə edə bilər
 ];
 
 // DOM Elements

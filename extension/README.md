@@ -40,13 +40,13 @@ Saytda video açanda:
 
 ## ✨ Xüsusiyyətlər
 
-✅ **Dinamik sayt əlavəsi** - Popup-dan istənilən sayt əlavə edin  
-✅ **Default saytlar** - AnimeCix və tau-video avtomatik dəstəklənir  
+✅ **Universal dəstək** - Bütün video saytlarında işləyir (`<all_urls>`)
+✅ **Dinamik sayt əlavəsi** - Popup-dan əlavə sayt əlavə edə bilərsiniz  
 ✅ **Floating button UI** - Sağ alt küncdə 🙈 düyməsi  
 ✅ **Klaviatura qısayolları** - H və Ctrl+H  
 ✅ **Sağ klik dəstəyi** - Video üzərində  
 ✅ **iframe dəstəyi** - Bütün frame-lərdə işləyir  
-✅ **Plyr, Video.js** və digər playerləri dəstəkləyir
+✅ **Plyr, Video.js, JW Player** və digər playerləri dəstəkləyir
 
 ## 📁 Fayllar
 

@@ -1,4 +1,4 @@
-// AnimeCix Video Controls Hider - Browser Extension
+// Video Controls Hider - Universal Browser Extension
 // Sağ klik və ya H düyməsi ilə player kontrollarını gizlət/göstər
 
 (function () {
@@ -20,6 +20,7 @@
     let controlsHidden = false;
     let lastFoundControls = null;
     let floatingBtn = null;
+    let buttonPermanentlyHidden = false; // Sağ klik sonra düymə tamamilə gizlənir
 
     function findPlayerControls() {
         if (lastFoundControls && document.body.contains(lastFoundControls)) {
@@ -36,10 +37,21 @@
 
         // Genişləndirilmiş selektor siyahısı
         const selectors = [
-            // Plyr
+            // Plyr - Genişləndirilmiş
             '.plyr__controls',
             '.plyr-controls',
+            '.plyr__control',
+            '.plyr__control-bar',
+            '.plyr__header',
+            '.plyr__top-bar',
+            '.plyr__top-controls',
+            '.plyr__bottom-controls',
+            '.plyr__progress',
+            '.plyr__volume',
+            '.plyr__time',
+            '.plyr__menu',
             '[class*="plyr"][class*="control"]',
+            '[class*="plyr__"]',
 
             // Video.js
             '.vjs-control-bar',
@@ -57,6 +69,22 @@
             '.fp-controls',
             '.flowplayer .fp-controls',
 
+            // Altyazı və Dil Seçim Düymələri
+            '[class*="subtitle"]',
+            '[class*="caption"]',
+            '[class*="language"]',
+            '[class*="audio-track"]',
+            '[class*="quality"]',
+            '[id*="subtitle"]',
+            '[id*="caption"]',
+            '[id*="language"]',
+
+            // Overlay və Popup Menular
+            '[class*="overlay"][class*="button"]',
+            '[class*="menu"][class*="button"]',
+            '[class*="settings"]',
+            '[class*="option"]',
+
             // Generic
             '[class*="player"][class*="control"]',
             '[class*="video"][class*="control"]',
@@ -64,7 +92,7 @@
             '[class*="control-bar"]',
             '[class*="controlbar"]',
 
-            // HDFilmCehennemi və oxşar saytlar
+            // Generic player selectors
             '[class*="jw"]',
             '[id*="control"]',
             '[id*="player-control"]'
@@ -116,26 +144,106 @@
     }
 
     function toggleControls() {
-        const controls = findPlayerControls();
+        const video = document.querySelector('video');
 
-        if (!controls) {
-            console.log('⚠️ Kontroller tapılmadı - video yüklənməyi gözləyin');
+        if (!video) {
+            console.log('⚠️ Video tapılmadı');
             updateButton('❌');
             return;
         }
 
+        const controls = findPlayerControls();
+
         controlsHidden = !controlsHidden;
 
         if (controlsHidden) {
-            controls.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
-            console.log('✅ Kontroller gizlədildi');
+            // Əsas kontrolları gizlət
+            if (controls) {
+                controls.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+            }
+
+            // Video container-dəki BÜTÜN overlay elementləri gizlət
+            const container = video.closest('div') || video.parentElement;
+            if (container) {
+                // Bütün div və button elementləri tap
+                const overlayElements = container.querySelectorAll('div:not(video), button, a[class*="button"]');
+
+                overlayElements.forEach(el => {
+                    // Video özünü gizlətmə
+                    if (el !== video && !el.contains(video)) {
+                        const rect = el.getBoundingClientRect();
+                        const hasPlyrClass = el.className && el.className.toString().includes('plyr');
+
+                        // Plyr elementləri və ya kiçik overlay-lər
+                        if (hasPlyrClass || (rect.width > 0 && rect.height > 0 && rect.height < 300)) {
+                            el.setAttribute('data-hidden-by-extension', 'true');
+                            el.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+                        }
+                    }
+                });
+            }
+
+
+            // Video sibling-lərini də gizlət (iframe player-lər üçün)
+            if (video.parentElement) {
+                const siblings = Array.from(video.parentElement.children);
+
+                siblings.forEach(sibling => {
+                    if (sibling !== video && sibling.tagName !== 'VIDEO') {
+                        sibling.setAttribute('data-hidden-by-extension', 'true');
+                        sibling.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+                    }
+                });
+
+                // Grandparent səviyyəsində də yoxla (nested player-lər üçün)
+                const grandparent = video.parentElement.parentElement;
+                if (grandparent) {
+                    const grandSiblings = Array.from(grandparent.children);
+
+                    grandSiblings.forEach(sibling => {
+                        // Video parent-i gizlətmə, amma digər sibling-ləri gizlət
+                        if (sibling !== video.parentElement && !sibling.contains(video)) {
+                            sibling.setAttribute('data-hidden-by-extension', 'true');
+                            sibling.style.cssText = 'display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;';
+                        }
+                    });
+                }
+            }
+
+            console.log('✅ Bütün kontroller və overlay-lər gizlədildi');
             updateButton('👁️');
+
+            // Düyməni də gizlət
+            setTimeout(() => {
+                if (floatingBtn && controlsHidden) {
+                    floatingBtn.style.opacity = '0';
+                }
+            }, 2000);
         } else {
-            controls.style.cssText = '';
+            // Hamısını geri göstər
+            if (controls) {
+                controls.style.cssText = '';
+            }
+
+            // Gizlədilmiş overlay-ləri geri göstər
+            const hiddenElements = document.querySelectorAll('[data-hidden-by-extension="true"]');
+            hiddenElements.forEach(el => {
+                el.removeAttribute('data-hidden-by-extension');
+                el.style.cssText = '';
+            });
+
             console.log('✅ Kontroller göstərildi');
             updateButton('🙈');
+
+            // Düyməni göstər
+            if (floatingBtn) {
+                floatingBtn.style.opacity = '1';
+                clearTimeout(hideButtonTimeout);
+            }
         }
     }
+
+    let hideButtonTimeout = null;
 
     function createFloatingButton() {
         floatingBtn = document.createElement('div');
@@ -158,15 +266,19 @@
             font-size: 24px;
             z-index: 999999;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, opacity 0.5s ease;
+            opacity: 1;
         `;
 
         floatingBtn.addEventListener('mouseenter', () => {
             floatingBtn.style.transform = 'scale(1.1)';
+            floatingBtn.style.opacity = '1';
+            clearTimeout(hideButtonTimeout);
         });
 
         floatingBtn.addEventListener('mouseleave', () => {
             floatingBtn.style.transform = 'scale(1)';
+            scheduleButtonHide();
         });
 
         floatingBtn.addEventListener('click', (e) => {
@@ -176,6 +288,25 @@
 
         document.body.appendChild(floatingBtn);
         console.log('✅ Floating button əlavə edildi');
+
+        // Mouse hərəkətində düyməni göstər
+        document.addEventListener('mousemove', showButtonTemporarily);
+    }
+
+    function showButtonTemporarily() {
+        if (!floatingBtn || buttonPermanentlyHidden) return; // Permanent gizlidirsə göstərmə
+
+        floatingBtn.style.opacity = '1';
+        scheduleButtonHide();
+    }
+
+    function scheduleButtonHide() {
+        clearTimeout(hideButtonTimeout);
+        hideButtonTimeout = setTimeout(() => {
+            if (floatingBtn) {
+                floatingBtn.style.opacity = '0';
+            }
+        }, 5000); // 5 saniyə sonra gizlən
     }
 
     function updateButton(emoji) {
@@ -187,13 +318,26 @@
     function setupVideo(video) {
         if (video.__controlsHiderAttached) return;
 
-        video.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            toggleControls();
-            return false;
-        }, { capture: true, passive: false });
+        // YouTube üçün sağ klik funksiyasını deaktiv et (sessiya error-u önləmək üçün)
+        const isYouTube = window.location.hostname.includes('youtube.com');
+
+        if (!isYouTube) {
+            video.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                // Sağ klik - düyməni tamamilə gizlət
+                buttonPermanentlyHidden = true;
+                if (floatingBtn) {
+                    floatingBtn.style.opacity = '0';
+                    clearTimeout(hideButtonTimeout);
+                }
+
+                toggleControls();
+                return false;
+            }, { capture: true, passive: false });
+        }
 
         video.__controlsHiderAttached = true;
         console.log('✅ Video hazırlandı');
@@ -204,10 +348,12 @@
 
     function checkForVideo() {
         const videos = document.querySelectorAll('video');
+        const isIframe = window.self !== window.top;
+        const context = isIframe ? '🖼️' : '📄';
 
         if (videos.length > 0) {
             videos.forEach(setupVideo);
-            console.log(`✅ ${videos.length} video tapıldı`);
+            console.log(`${context} ✅ ${videos.length} video tapıldı`);
 
             if (!floatingBtn && document.body) {
                 createFloatingButton();
@@ -232,7 +378,10 @@
     });
 
     function init() {
-        console.log('🎬 AnimeCix Video Controls Hider Extension');
+        const isIframe = window.self !== window.top;
+        const context = isIframe ? '🖼️ IFRAME' : '📄 MAIN PAGE';
+        console.log(`${context} 🎬 Video Controls Hider Extension`);
+        console.log(`${context} URL: ${window.location.href}`);
 
         if (!checkForVideo()) {
             if (document.body) {
@@ -259,6 +408,20 @@
 
         console.log('💡 Düyməyə klik və ya H basın');
     }
+
+    // Kontekst menyudan mesaj dinlə
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        console.log('📨 Mesaj alındı:', message);
+
+        if (message.action === 'toggleControlsFromContextMenu') {
+            console.log('🎬 Kontekst menyudan toggle işə salınır...');
+            toggleControls();
+            sendResponse({ success: true });
+            console.log('✅ Toggle tamamlandı');
+        }
+
+        return true; // Async response üçün
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

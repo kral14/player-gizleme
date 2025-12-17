@@ -1,12 +1,8 @@
 // Background Service Worker - Dynamic Content Script Injection
 
 const DEFAULT_URLS = [
-    'https://animecix.tv/*',
-    'https://animecix.co/*',
-    'https://*.animecix.tv/*',
-    'https://*.animecix.co/*',
-    'https://tau-video.xyz/*',
-    'https://*.tau-video.xyz/*'
+    // Extension işləyir bütün saytlarda (<all_urls> manifest-də)
+    // İstifadəçi popup-dan əlavə URL-lər əlavə edə bilər
 ];
 
 // Check if URL matches any pattern
@@ -75,6 +71,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.runtime.onInstalled.addListener(async () => {
     console.log('🎬 Extension installed/updated');
 
+    // YouTube üçün kontekst menyu yarat
+    try {
+        await chrome.contextMenus.create({
+            id: 'toggleVideoControls',
+            title: 'Video kontrollarını gizlət/göstər',
+            contexts: ['all'],
+            documentUrlPatterns: ['*://*.youtube.com/*']
+        });
+        console.log('✅ YouTube kontekst menyusu yaradıldı');
+    } catch (error) {
+        console.error('❌ Kontekst menyu yaradılmadı:', error);
+    }
+
     // Inject into all matching tabs
     const tabs = await chrome.tabs.query({});
     for (const tab of tabs) {
@@ -85,3 +94,25 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 console.log('🎬 Background service worker active');
+
+// Kontekst menyu klik hadisəsi
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    console.log('🖱️ Kontekst menyu klikləndi:', info);
+    console.log('📋 Menu ID:', info.menuItemId);
+    console.log('🎯 Tab ID:', tab.id);
+
+    if (info.menuItemId === 'toggleVideoControls') {
+        console.log('✅ Toggle mesajı göndərilir...');
+        // Content script-ə mesaj göndər
+        chrome.tabs.sendMessage(tab.id, {
+            action: 'toggleControlsFromContextMenu'
+        }, (response) => {
+            if (chrome.runtime.lastError) {
+                console.error('❌ Mesaj göndərilmədi:', chrome.runtime.lastError);
+            } else {
+                console.log('✅ Mesaj cavabı:', response);
+            }
+        });
+    }
+});
+

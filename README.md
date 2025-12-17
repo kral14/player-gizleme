@@ -1,6 +1,6 @@
-# AnimeCix Video Controls Hider
+# Video Controls Hider - Universal Extension
 
-Browser extension - AnimeCix video player kontrollarını gizlətmək üçün.
+Browser extension - **İstənilən saytda** video player kontrollarını gizlətmək üçün.
 
 ## 🚀 Quraşdırma
 
@@ -23,26 +23,28 @@ Browser extension - AnimeCix video player kontrollarını gizlətmək üçün.
 
 ## 💡 İstifadə
 
-Extension quraşdırıldıqdan sonra AnimeCix-ə daxil olun:
+Extension quraşdırıldıqdan sonra **istənilən video saytına** daxil olun:
 
 - **H** düyməsinə basın → Kontroller toggle olur
 - **Ctrl+H** basın → Eyni effekt  
 - **🙈 düyməyə** klik edin (sağ alt künc)
+- **YouTube-da:** Video üzərinə sağ klik → "Video kontrollarını gizlət/göstər"
 - **Video üzərində sağ klik** → Toggle
 
 ## ✨ Xüsusiyyətlər
 
+✅ **Bütün saytlarda işləyir** - YouTube, Netflix, AnimeCix, hdfilmcehennemi və s.  
 ✅ **Avtomatik işləyir** - Tampermonkey lazım deyil  
-✅ **iframe dəstəyi** - tau-video.xyz və digər iframe-lər  
+✅ **iframe dəstəyi** - Bütün iframe video playerlər  
 ✅ **Floating button UI** - Sağ alt küncdə 🙈 düyməsi  
 ✅ **Klaviatura qısayolları** - H və Ctrl+H  
 ✅ **Sağ klik dəstəyi** - Video üzərində  
 ✅ **Dinamik aşkarlama** - MutationObserver ilə  
-✅ **Plyr, Video.js** və digər playerləri dəstəkləyir
+✅ **Plyr, Video.js, JW Player** və digər playerləri dəstəkləyir
 
 ## 🎮 Necə İşlədir
 
-1. Extension avtomatik olaraq AnimeCix.tv və tau-video.xyz saytlarında aktivləşir
+1. Extension avtomatik olaraq **bütün saytlarda** aktivləşir
 2. Video tapıldıqda sağ alt küncdə 🙈 düyməsi görünür
 3. **H** basın və ya **düyməyə klik** edin
 4. Kontroller gizlənir/göstərilir
@@ -75,8 +77,7 @@ video-player-controls-hider/
 - Səhifədə video varmı yoxlayın
 - Console-da `document.querySelector('video')` yazın
 
----
 
-**Versiya:** 1.0.0  
-**Son yeniləmə:** 2025-12-16  
+**Versiya:** 3.1.0  
+**Son yeniləmə:** 2025-12-17  
 **GitHub:** https://github.com/kral14/player-gizleme
