@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Controls Hider",
-  "version": "3.1.2",
+  "version": "3.1.7",
   "description": "Video player kontrollarını gizlət - İstənilən saytda işləyir",
   "icons": {
     "16": "icon16.png",

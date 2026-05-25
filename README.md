@@ -1,83 +1,14 @@
-# Video Controls Hider - Universal Extension
+# Video Controls Hider
+A universal Chrome/Chromium extension to hide video player controls for an immersive viewing experience, without breaking subtitles.
 
-Browser extension - **İstənilən saytda** video player kontrollarını gizlətmək üçün.
+## Features
+* Hides controls of native HTML5 players, YouTube, JWPlayer, Plyr, Video.js, etc.
+* Preserves subtitles seamlessly.
+* Right click and hold for 1.5 seconds to toggle visibility, or use `Ctrl + H`.
+* Works on Windows, Linux, Mac, and ChromeOS.
 
-## 🚀 Quraşdırma
-
-### Chrome/Edge üçün:
-
-1. **Chrome/Edge açın** və yazın:
-   - Chrome: `chrome://extensions/`
-   - Edge: `edge://extensions/`
-
-2. **Developer mode** aktivləşdirin (yuxarı sağ küncdə)
-
-3. **"Load unpacked"** düyməsinə basın
-
-4. **extension** qovluğunu seçin:
-   ```
-   C:\Users\nesib\.gemini\antigravity\scratch\video-player-controls-hider\extension
-   ```
-
-5. ✅ Extension quraşdırıldı!
-
-## 💡 İstifadə
-
-Extension quraşdırıldıqdan sonra **istənilən video saytına** daxil olun:
-
-- **H** düyməsinə basın → Kontroller toggle olur
-- **Ctrl+H** basın → Eyni effekt  
-- **🙈 düyməyə** klik edin (sağ alt künc)
-- **YouTube-da:** Video üzərinə sağ klik → "Video kontrollarını gizlət/göstər"
-- **Video üzərində sağ klik** → Toggle
-
-## ✨ Xüsusiyyətlər
-
-✅ **Bütün saytlarda işləyir** - YouTube, Netflix, AnimeCix, hdfilmcehennemi və s.  
-✅ **Avtomatik işləyir** - Tampermonkey lazım deyil  
-✅ **iframe dəstəyi** - Bütün iframe video playerlər  
-✅ **Floating button UI** - Sağ alt küncdə 🙈 düyməsi  
-✅ **Klaviatura qısayolları** - H və Ctrl+H  
-✅ **Sağ klik dəstəyi** - Video üzərində  
-✅ **Dinamik aşkarlama** - MutationObserver ilə  
-✅ **Plyr, Video.js, JW Player** və digər playerləri dəstəkləyir
-
-## 🎮 Necə İşlədir
-
-1. Extension avtomatik olaraq **bütün saytlarda** aktivləşir
-2. Video tapıldıqda sağ alt küncdə 🙈 düyməsi görünür
-3. **H** basın və ya **düyməyə klik** edin
-4. Kontroller gizlənir/göstərilir
-
-## 📁 Struktur
-
-```
-video-player-controls-hider/
-├── extension/              # Browser extension
-│   ├── manifest.json      # Extension konfiqurasiyası
-│   ├── content.js         # Əsas skript
-│   ├── icon*.png          # İkonlar
-│   └── README.md          # Ətraflı təlimatlar
-└── README.md              # Bu fayl
-```
-
-## ❓ Problem Həlli
-
-### Extension işləmir
-- Developer mode aktivdir?
-- Extension enable edilib?
-- Səhifəni yeniləyin (F5)
-
-### Kontroller tapılmır
-- Video tam yüklənənə qədər gözləyin
-- Console açıb (F12) xəta varmı yoxlayın
-- Extension-u reload edin
-
-### Düymə görünmür
-- Səhifədə video varmı yoxlayın
-- Console-da `document.querySelector('video')` yazın
-
-
-**Versiya:** 3.1.0  
-**Son yeniləmə:** 2025-12-17  
-**GitHub:** https://github.com/kral14/player-gizleme
+## Installation (Local)
+1. Download or clone this repository.
+2. Go to `chrome://extensions` in your browser.
+3. Enable "Developer mode".
+4. Click "Load unpacked" and select the `extension` folder.
