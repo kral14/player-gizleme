@@ -22,6 +22,23 @@
     let floatingBtn = null;
     let buttonPermanentlyHidden = false; // Sağ klik sonra düymə tamamilə gizlənir
 
+    function logToPopup(msg, type = 'info') {
+        const time = new Date().toTimeString().split(' ')[0];
+        const isIframe = window.self !== window.top;
+        const prefix = isIframe ? '[IFRAME] ' : '[ƏSAS] ';
+        const entry = { time, msg: prefix + msg, type };
+
+        try {
+            chrome.storage.local.get({ vchLogs: [] }, (res) => {
+                if (chrome.runtime.lastError) return;
+                const logs = res.vchLogs || [];
+                logs.push(entry);
+                if (logs.length > 50) logs.shift();
+                chrome.storage.local.set({ vchLogs: logs });
+            });
+        } catch(e) {}
+    }
+
     function findPlayerControls() {
         const video = document.querySelector('video');
         if (!video) return [];
@@ -224,6 +241,9 @@
                 }
             }
 
+            // Videonun klikləri birbaşa qəbul etməsini təmin et
+            video.style.setProperty('pointer-events', 'auto', 'important');
+
             console.log('✅ Bütün kontroller və overlay-lər gizlədildi');
             updateButton('👁️');
 
@@ -252,6 +272,9 @@
                 el.removeAttribute('data-hidden-by-extension');
                 el.style.cssText = '';
             });
+
+            // Video stilini təmizlə
+            video.style.removeProperty('pointer-events');
 
             console.log('✅ Kontroller göstərildi');
             updateButton('🙈');
@@ -456,29 +479,49 @@
             }
         }, { capture: true, passive: false });
 
-        // Debugging: sol düymə hadisələrini izləyirik
-        video.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && controlsHidden) {
-                e.stopPropagation();
-            }
-        }, { capture: true });
-
-        video.addEventListener('mouseup', (e) => {
-            if (e.button === 0 && controlsHidden) {
-                e.stopPropagation();
-            }
-        }, { capture: true });
-
         // Kontrollar gizli olduqda bəzi playerlərdə sol klik (play/pause) işləmir, bunu bərpa edirik
         video.addEventListener('click', (e) => {
-            if (e.button === 0) { // Sol klik
-                if (controlsHidden) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    
+            logToPopup(`🖱️ Video klik: button=${e.button}, controlsHidden=${controlsHidden}, paused=${video.paused}`, 'info');
+
+            if (e.button === 0 && controlsHidden) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 1. Pleyerin rəsmi Play/Pause düyməsini tap
+                const selectors = [
+                    '.jw-icon-playback',
+                    '.jw-display-icon-display',
+                    '.jw-icon-display',
+                    '[aria-label*="Duraklat"]',
+                    '[aria-label*="Oynat"]',
+                    '[aria-label*="Pause"]',
+                    '[aria-label*="Play"]',
+                    '.ytp-play-button',
+                    '.plyr__control--overlaid',
+                    '[data-plyr="play"]',
+                    '.vjs-play-control'
+                ];
+                let playBtn = null;
+                for (const s of selectors) {
+                    playBtn = document.querySelector(s);
+                    if (playBtn) break;
+                }
+
+                if (playBtn) {
+                    logToPopup(`🎯 Düymə tapıldı (${playBtn.className || playBtn.getAttribute('aria-label')}), klik edilir...`, 'success');
+                    try { playBtn.click(); } catch(err) {}
+                    try { playBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window })); } catch(err) {}
+                } else {
+                    logToPopup('ℹ️ Düymə tapılmadı, Space və HTML5 tətbiq olunur...', 'warn');
+                    try {
+                        const targetBox = document.querySelector('.jwplayer') || video.parentElement;
+                        if (targetBox) {
+                            targetBox.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', keyCode: 32, which: 32, bubbles: true }));
+                        }
+                    } catch(err) {}
+
                     if (video.paused) {
-                        video.play();
+                        video.play().catch(err => logToPopup(`❌ Play xətası: ${err.message}`, 'error'));
                     } else {
                         video.pause();
                     }

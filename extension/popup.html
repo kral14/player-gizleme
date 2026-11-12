@@ -32,6 +32,24 @@
             </div>
         </div>
 
+        <div class="debug-card">
+            <button id="toggleDebugBtn" class="btn-debug-toggle">
+                🐞 Debug Pəncərəsini Aç / Gizlət
+            </button>
+            <div id="debugContent" class="debug-content" style="display: none;">
+                <div class="debug-actions">
+                    <span class="debug-title">Canlı Klik Loqları</span>
+                    <div class="debug-btns">
+                        <button id="copyLogsBtn" class="btn-sub btn-copy">📋 Kopyala</button>
+                        <button id="clearLogsBtn" class="btn-sub btn-clear">🗑️ Təmizlə</button>
+                    </div>
+                </div>
+                <div id="popupLogs" class="popup-logs">
+                    <div class="log-empty">Hələ klik qeydə alınmayıb...</div>
+                </div>
+            </div>
+        </div>
+
         <footer>
             <div class="shortcuts">
                 <span class="shortcut-item">⌨️ <kbd>H</kbd> Toggle</span>

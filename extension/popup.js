@@ -170,3 +170,73 @@ urlInput.addEventListener('keypress', (e) => {
 
 // Initialize
 loadUrls();
+
+// ==========================================
+// 🐞 Debug Pəncərəsi Məntiqi
+// ==========================================
+const toggleDebugBtn = document.getElementById('toggleDebugBtn');
+const debugContent = document.getElementById('debugContent');
+const popupLogs = document.getElementById('popupLogs');
+const copyLogsBtn = document.getElementById('copyLogsBtn');
+const clearLogsBtn = document.getElementById('clearLogsBtn');
+
+toggleDebugBtn.addEventListener('click', () => {
+    const isHidden = debugContent.style.display === 'none';
+    debugContent.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) {
+        loadDebugLogs();
+    }
+});
+
+function loadDebugLogs() {
+    chrome.storage.local.get({ vchLogs: [] }, (res) => {
+        const logs = res.vchLogs || [];
+        if (logs.length === 0) {
+            popupLogs.innerHTML = '<div class="log-empty">Hələ klik qeydə alınmayıb...</div>';
+            return;
+        }
+
+        popupLogs.innerHTML = '';
+        logs.forEach(log => {
+            const row = document.createElement('div');
+            row.style.lineHeight = '1.3';
+            row.style.wordBreak = 'break-word';
+
+            let color = '#38bdf8';
+            if (log.type === 'warn') color = '#fbbf24';
+            if (log.type === 'error') color = '#f87171';
+            if (log.type === 'success') color = '#4ade80';
+
+            row.innerHTML = `<span style="color:#64748b;">[${log.time}]</span> <span style="color:${color};">${log.msg}</span>`;
+            popupLogs.appendChild(row);
+        });
+        popupLogs.scrollTop = popupLogs.scrollHeight;
+    });
+}
+
+// 📋 Kopyala
+copyLogsBtn.addEventListener('click', () => {
+    const text = popupLogs.innerText;
+    if (!text || text.includes('Hələ klik qeydə alınmayıb')) {
+        showStatus('Kopyalanacaq loq yoxdur', 'error');
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        copyLogsBtn.textContent = '✅ Kopyalandı!';
+        setTimeout(() => { copyLogsBtn.textContent = '📋 Kopyala'; }, 1500);
+    });
+});
+
+// 🗑️ Təmizlə
+clearLogsBtn.addEventListener('click', () => {
+    chrome.storage.local.set({ vchLogs: [] }, () => {
+        popupLogs.innerHTML = '<div class="log-empty">Loqlar təmizləndi.</div>';
+    });
+});
+
+// Açıq olanda hər saniyə yenilə
+setInterval(() => {
+    if (debugContent.style.display !== 'none') {
+        loadDebugLogs();
+    }
+}, 1000);
